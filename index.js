@@ -25,7 +25,7 @@ app.use("/user", userRouter);
 
 app.use((err, req, res, next) => {
   var code = res.statusCode || 500;
-  res.status(code).json({
+  res.status(code == 200 ? 500 : code).json({
     status: false,
     message: err.message,
     data: null,

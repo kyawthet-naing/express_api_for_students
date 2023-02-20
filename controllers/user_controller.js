@@ -9,7 +9,6 @@ let register = async (req, res, next) => {
   try {
     let data = req.body;
     data.role = "user";
-    // let token  = helper.makeToken()
     data.pass = helper.encodePass(data.pass);
     var result = await db(data).save();
     let obj = result.toObject();
@@ -64,7 +63,7 @@ let login = async (req, res, next) => {
         };
         res.status(200).json({
           status: true,
-          message: "new data updated",
+          message: "login success",
           data: authData,
         });
       } else {
