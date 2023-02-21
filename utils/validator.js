@@ -7,7 +7,9 @@ exports.validateBody = (schema) => {
     let result = schema.validate(req.body);
     if (result.error) {
       let errMsg = result.error.details[0].message.split('"').join("");
-      next(new Error(errMsg));
+      let err = new Error(errMsg);
+      err.status = 422;
+      next(err);
     } else {
       next();
     }
@@ -18,7 +20,7 @@ exports.validateMongoId = () => {
   return (req, res, next) => {
     ///req.params.id, so route params must be "/:id"
     if (!ObjectId.isValid(req.params.id)) {
-      next(new Error(`invalid request data`));
+      next(new Error(`invalid mongo id`));
     } else {
       next();
     }
@@ -38,7 +40,9 @@ exports.validateQuery = (queryName) => {
 exports.validateToken = () => {
   return (req, res, next) => {
     if (!req.headers.authorization) {
-      next(new Error("Tokenization Error"));
+      let err = new Error("Invalid Token");
+      err.status = 498;
+      next(err);
       return;
     }
     let token = req.headers.authorization.split(" ")[1];
@@ -49,13 +53,19 @@ exports.validateToken = () => {
           req.user = user;
           next();
         } else {
-          next(new Error("Tokenization Error"));
+          let err = new Error("Invalid Token");
+          err.status = 498;
+          next(err);
         }
       } catch (error) {
-        next(new Error("Tokenization Error"));
+        let err = new Error("Invalid Token");
+        err.status = 498;
+        next(err);
       }
     } else {
-      next(new Error("Tokenization Error"));
+      let err = new Error("Invalid Token");
+      err.status = 498;
+      next(err);
     }
   };
 };
@@ -67,11 +77,14 @@ exports.validateRole = (role) => {
     let valid;
 
     if (!req.headers.authorization) {
-      next(new Error("Tokenization Error"));
+      let err = new Error("Invalid Token");
+      err.status = 498;
+      next(err);
       return;
     }
     let token = req.headers.authorization.split(" ")[1];
     req.user = Helper.decodeToken(token);
+
     for (const rol of role) {
       if (req.user.role == rol) {
         valid = true;
@@ -81,7 +94,9 @@ exports.validateRole = (role) => {
     if (valid) {
       next();
     } else {
-      next(new Error("You don't have this permission"));
+      let err = new Error("You don't have this permission");
+      err.status = 403;
+      next(err);
     }
   };
 };

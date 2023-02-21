@@ -57,6 +57,7 @@ let update = async (req, res, next) => {
       response.throwError();
     }
   } catch (e) {
+    // console.log(e.message)
     next(e);
   }
 };
@@ -64,15 +65,22 @@ let update = async (req, res, next) => {
 let drop = async (req, res, next) => {
   try {
     const options = req.params;
-    var result = await db.findByIdAndDelete(options.id);
-    if (result) {
-      response.success(res, {
-        message: "contact delete success",
-        status: 200,
-        data: result,
-      });
+
+    let data = await db.findById(options.id);
+
+    if (data) {
+      var result = await db.findByIdAndDelete(options.id);
+      if (result) {
+        response.success(res, {
+          message: "contact delete success",
+          status: 200,
+          data: result,
+        });
+      } else {
+        response.throwError();
+      }
     } else {
-      response.throwError();
+      response.throwError({ message: "req id not found" });
     }
   } catch (e) {
     next(e);

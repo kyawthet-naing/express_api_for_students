@@ -18,6 +18,8 @@ app.use(express.json());
 
 const contactRouter = require("./routes/contact_route");
 const userRouter = require("./routes/user_route");
+
+app.get("/", (req, res, next) => {});
 app.use("/uploads", uploadedFiles);
 
 app.use("/contact", contactRouter);
@@ -32,6 +34,8 @@ app.use("*", (req, res, next) => {
 
 ///error handling
 app.use((err, req, res, next) => {
+
+  // console.log(err)
   var code = err.status || 500;
   res.status(code == 200 ? 500 : code).json({
     status: false,

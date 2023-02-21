@@ -50,6 +50,30 @@ let get = async (req, res, next) => {
   }
 };
 
+let getAdminOrOwner = async (req, res, next) => {
+  try {
+    var result = await db
+      .find({
+        $or: [
+          {
+            role: "admin",
+          },
+          {
+            role: "owner",
+          },
+        ],
+      })
+      .select("-pass -__v");
+    if (result) {
+      response.success(res, { data: result });
+    } else {
+      response.throwError();
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
 let login = async (req, res, next) => {
   try {
     let data = req.body;
@@ -63,8 +87,10 @@ let login = async (req, res, next) => {
         delete obj["pass"];
 
         let token = helper.makeToken(obj);
+        delete obj.role;
+
         let loginData = {
-          user: user,
+          user: obj,
           token: token,
         };
         response.success(res, { message: "login success", data: loginData });
@@ -109,6 +135,7 @@ let drop = async (req, res, next) => {
 };
 
 module.exports = {
+  getAdminOrOwner,
   register,
   update,
   login,

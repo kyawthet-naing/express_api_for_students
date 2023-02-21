@@ -8,6 +8,7 @@ const {
 } = require("../utils/validator");
 const { save } = require("../utils/uploader");
 const { contact_create } = require("../utils/validate_schema");
+
 router.get("/", [controller.get]);
 router.post("/add", [
   validateToken(),
@@ -18,6 +19,6 @@ router.post("/add", [
 router
   .route("/:id")
   .patch([validateMongoId(), controller.update])
-  .delete([validateRole(["admin"]), controller.drop]);
+  .delete([validateRole(["admin", "owner"]), controller.drop]);
 
 module.exports = router;
