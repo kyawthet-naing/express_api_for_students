@@ -1,4 +1,5 @@
 const db = require("../models/contact_model");
+const response = require("../utils/response");
 
 let create = async (req, res, next) => {
   try {
@@ -7,13 +8,16 @@ let create = async (req, res, next) => {
     var result = await db(data).save();
 
     if (result) {
-      res.status(200).json({
-        status: true,
-        message: "new data created",
+      response.success(res, {
+        message: "new contact created",
+        status: 201,
         data: result,
       });
     } else {
-      throw new Error("Server error");
+      response.throwError({
+        message: "Opps! Something is not right!",
+        status: 502,
+      });
     }
   } catch (e) {
     next(e);
@@ -26,13 +30,13 @@ let get = async (req, res, next) => {
       .find()
       .populate({ path: "author", select: "name email" });
     if (result) {
-      res.status(200).json({
-        status: true,
+      response.success(res, {
         message: "contact data",
+        status: 200,
         data: result,
       });
     } else {
-      throw new Error("Server error");
+      response.throwError({ status: 500 });
     }
   } catch (e) {
     next(e);
@@ -45,13 +49,12 @@ let update = async (req, res, next) => {
     var result = await db.findByIdAndUpdate(options.id, req.body);
     if (result) {
       let updatedData = await db.findById(result._id);
-      res.status(200).json({
-        status: true,
-        message: "new data updated",
+      response.success(res, {
+        status: 200,
         data: updatedData,
       });
     } else {
-      throw new Error("Server error");
+      response.throwError();
     }
   } catch (e) {
     next(e);
@@ -63,13 +66,13 @@ let drop = async (req, res, next) => {
     const options = req.params;
     var result = await db.findByIdAndDelete(options.id);
     if (result) {
-      res.status(200).json({
-        status: true,
-        message: "data deleted",
+      response.success(res, {
+        message: "contact delete success",
+        status: 200,
         data: result,
       });
     } else {
-      throw new Error("Server error");
+      response.throwError();
     }
   } catch (e) {
     next(e);

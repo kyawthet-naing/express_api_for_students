@@ -23,8 +23,16 @@ app.use("/uploads", uploadedFiles);
 app.use("/contact", contactRouter);
 app.use("/user", userRouter);
 
+///unknown route
+app.use("*", (req, res, next) => {
+  let err = new Error("Route Not Found");
+  err.status = 404;
+  next(err);
+});
+
+///error handling
 app.use((err, req, res, next) => {
-  var code = res.statusCode || 500;
+  var code = err.status || 500;
   res.status(code == 200 ? 500 : code).json({
     status: false,
     message: err.message,

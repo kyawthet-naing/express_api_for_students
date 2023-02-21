@@ -9,6 +9,7 @@ exports.save = (req, res, next) => {
     req.body.cover = `/uploads/${name}`;
     next();
   } catch (e) {
-    throw new Error(e);
+    ///if file not found
+    next();
   }
 };

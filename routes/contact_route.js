@@ -4,6 +4,7 @@ const {
   validateToken,
   validateBody,
   validateMongoId,
+  validateRole,
 } = require("../utils/validator");
 const { save } = require("../utils/uploader");
 const { contact_create } = require("../utils/validate_schema");
@@ -17,6 +18,6 @@ router.post("/add", [
 router
   .route("/:id")
   .patch([validateMongoId(), controller.update])
-  .delete([controller.drop]);
+  .delete([validateRole(["admin"]), controller.drop]);
 
 module.exports = router;

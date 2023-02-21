@@ -59,3 +59,29 @@ exports.validateToken = () => {
     }
   };
 };
+
+///role must be array ['owner'], for multi role access
+///role must be array ['owner','admin']
+exports.validateRole = (role) => {
+  return (req, res, next) => {
+    let valid;
+
+    if (!req.headers.authorization) {
+      next(new Error("Tokenization Error"));
+      return;
+    }
+    let token = req.headers.authorization.split(" ")[1];
+    req.user = Helper.decodeToken(token);
+    for (const rol of role) {
+      if (req.user.role == rol) {
+        valid = true;
+      }
+    }
+
+    if (valid) {
+      next();
+    } else {
+      next(new Error("You don't have this permission"));
+    }
+  };
+};
